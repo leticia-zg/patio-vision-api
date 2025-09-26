@@ -1,8 +1,9 @@
 package br.com.fiap.patiovison.patio;
 
+import br.com.fiap.patiovison.helper.AppConstants;
+import br.com.fiap.patiovison.helper.BaseController;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -11,78 +12,71 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import jakarta.validation.Valid;
 
+/**
+ * Controller responsável pelo gerenciamento de pátios.
+ * Extende BaseController para reutilizar funcionalidades comuns.
+ */
 @Controller
 @RequestMapping("/patio")
 @RequiredArgsConstructor
-public class PatioController {
+public class PatioController extends BaseController {
 
     private final PatioService patioService;
 
     @GetMapping
     public String index(Model model, Authentication authentication) {
-        model.addAttribute("patios", patioService.findAll());
+        model.addAttribute(AppConstants.ATTR_PATIOS, patioService.findAll());
         addPrincipal(model, authentication);
-        return "patio/index";
+        return AppConstants.VIEW_PATIO_INDEX;
     }
 
     @GetMapping("/form")
     public String form(PatioDTO patioDTO, Model model, Authentication authentication) {
-        model.addAttribute("patio", patioDTO);
+        model.addAttribute(AppConstants.ATTR_PATIO, patioDTO);
         addPrincipal(model, authentication);
-        return "patio/form";
+        return AppConstants.VIEW_PATIO_FORM;
     }
 
     @PostMapping("/form")
-    public String save(@Valid PatioDTO patioDTO, BindingResult result, RedirectAttributes redirect,
-                       Authentication authentication, Model model) {
-        if(result.hasErrors()) {
-            model.addAttribute("patio", patioDTO);
+    public String save(@Valid PatioDTO patioDTO, BindingResult result, 
+                       RedirectAttributes redirect, Authentication authentication, Model model) {
+        if (result.hasErrors()) {
+            model.addAttribute(AppConstants.ATTR_PATIO, patioDTO);
             addPrincipal(model, authentication);
-            return "patio/form";
+            return AppConstants.VIEW_PATIO_FORM;
         }
+        
         patioService.save(patioDTO);
-        redirect.addFlashAttribute("message", "Pátio salvo com sucesso!");
-        return "redirect:/patio";
+        redirect.addFlashAttribute(AppConstants.ATTR_MESSAGE, AppConstants.MSG_PATIO_SALVO);
+        return AppConstants.REDIRECT_PATIO;
     }
 
     @GetMapping("/{id}/edit")
     public String editForm(@PathVariable Long id, Model model, Authentication authentication) {
         PatioDTO dto = patioService.findById(id);
-        model.addAttribute("patio", dto);
+        model.addAttribute(AppConstants.ATTR_PATIO, dto);
         addPrincipal(model, authentication);
-        return "patio/form";
+        return AppConstants.VIEW_PATIO_FORM;
     }
 
     @PutMapping("/{id}")
-    public String update(@Valid PatioDTO patioDTO, BindingResult result, RedirectAttributes redirect,
-                         Authentication authentication, Model model) {
+    public String update(@Valid PatioDTO patioDTO, BindingResult result, 
+                         RedirectAttributes redirect, Authentication authentication, Model model) {
         if (result.hasErrors()) {
-            model.addAttribute("patio", patioDTO);
+            model.addAttribute(AppConstants.ATTR_PATIO, patioDTO);
             addPrincipal(model, authentication);
-            return "patio/form";
+            return AppConstants.VIEW_PATIO_FORM;
         }
+        
         patioService.save(patioDTO);
-        redirect.addFlashAttribute("message", "Pátio atualizado com sucesso!");
-        return "redirect:/patio";
+        redirect.addFlashAttribute(AppConstants.ATTR_MESSAGE, AppConstants.MSG_PATIO_ATUALIZADO);
+        return AppConstants.REDIRECT_PATIO;
     }
 
     @DeleteMapping("/{id}")
-    public String delete(@PathVariable Long id, RedirectAttributes redirect, Authentication authentication) {
+    public String delete(@PathVariable Long id, RedirectAttributes redirect) {
         patioService.delete(id);
-        redirect.addFlashAttribute("message", "Pátio removido com sucesso!");
-        return "redirect:/patio";
-    }
-
-    private void addPrincipal(Model model, Authentication authentication){
-        if (authentication == null){
-            return;
-        }
-        Object principal = authentication.getPrincipal();
-        model.addAttribute("user", principal);
-        if (principal instanceof OAuth2User oAuth2User){
-            Object pic = oAuth2User.getAttributes().get("picture");
-            Object avatar = pic != null ? pic : oAuth2User.getAttributes().get("avatar_url");
-            if (avatar != null) model.addAttribute("avatar", avatar.toString());
-        }
+        redirect.addFlashAttribute(AppConstants.ATTR_MESSAGE, AppConstants.MSG_PATIO_REMOVIDO);
+        return AppConstants.REDIRECT_PATIO;
     }
 }

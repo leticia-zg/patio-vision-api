@@ -1,69 +1,93 @@
 package br.com.fiap.patiovison.patio;
 
-import jakarta.persistence.EntityNotFoundException;
+import br.com.fiap.patiovison.helper.AppConstants;
+import br.com.fiap.patiovison.helper.BaseService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.stream.Collectors;
+
+/**
+ * Service para gerenciamento de pátios.
+ * Implementa BaseService para padronização de operações CRUD.
+ */
 @Service
 @RequiredArgsConstructor
-public class PatioService {
+public class PatioService implements BaseService<Patio, PatioDTO> {
 
     private final PatioRepository patioRepository;
 
+    @Override
     public List<PatioDTO> findAll() {
-        return patioRepository.findAll()
+        return patioRepository.findAllWithSetores()
                 .stream()
-                .map(this::toDTO)
+                .map(PatioDTO::fromEntity)
                 .collect(Collectors.toList());
     }
 
+    @Override
     public PatioDTO findById(Long id) {
         return patioRepository.findById(id)
-                .map(this::toDTO)
-                .orElseThrow(() -> new RuntimeException("Pátio não encontrado"));
+                .map(PatioDTO::fromEntity)
+                .orElseThrow(() -> new RuntimeException(AppConstants.ERR_PATIO_NAO_ENCONTRADO));
     }
 
+    @Override
     public PatioDTO save(PatioDTO dto) {
         Patio patio;
-        if(dto.getId() != null) {
-            // Atualização
+        if (dto.getId() != null) {
+            // Atualização - busca entidade existente
             patio = patioRepository.findById(dto.getId())
-                    .orElseThrow(() -> new RuntimeException("Pátio não encontrado"));
+                    .orElseThrow(() -> new RuntimeException(AppConstants.ERR_PATIO_NAO_ENCONTRADO));
             patio.setNome(dto.getNome());
         } else {
-            // Criação
+            // Criação - nova entidade
             patio = toEntity(dto);
         }
 
         Patio saved = patioRepository.save(patio);
-        return toDTO(saved);
+        return PatioDTO.fromEntity(saved);
     }
 
+    @Override
     public void delete(Long id) {
+        if (!patioRepository.existsById(id)) {
+            throw new RuntimeException(AppConstants.ERR_PATIO_NAO_ENCONTRADO);
+        }
         patioRepository.deleteById(id);
     }
 
-    private PatioDTO toDTO(Patio patio) {
-        return PatioDTO.builder()
-                .id(patio.getId())
-                .nome(patio.getNome())
-                .build();
+    @Override
+    public PatioDTO toDTO(Patio patio) {
+        return PatioDTO.fromEntity(patio);
     }
 
-    private Patio toEntity(PatioDTO dto) {
+    @Override
+    public Patio toEntity(PatioDTO dto) {
         Patio patio = new Patio();
+        patio.setId(dto.getId());
         patio.setNome(dto.getNome());
         return patio;
     }
 
+    // Métodos adicionais para compatibilidade com DashboardController
+
+    /**
+     * Busca todos os pátios como entidades (para o dashboard).
+     * @return Lista de entidades Patio
+     */
     public List<Patio> findAllEntities() {
-        return patioRepository.findAll(); // retorna entidades completas com setores e motos
+        return patioRepository.findAllWithSetores();
     }
 
+    /**
+     * Busca pátio por ID como entidade (para o dashboard).
+     * @param id ID do pátio
+     * @return Entidade Patio
+     */
     public Patio findByIdEntity(Long id) {
         return patioRepository.findById(id)
-                .orElseThrow(() -> new EntityNotFoundException("Pátio não encontrado"));
+                .orElseThrow(() -> new RuntimeException(AppConstants.ERR_PATIO_NAO_ENCONTRADO));
     }
 }

@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="pt-BR" data-theme="dracula" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title th:text="${moto.id != null ? 'Editar Moto' : 'Nova Moto'}"></title>
+    <link href="https://cdn.jsdelivr.net/npm/daisyui@5" rel="stylesheet" type="text/css"/>
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+</head>
+<body class="bg-black text-green-400 min-h-screen">
+<nav class="navbar bg-gray-900 shadow px-4 py-2">
+    <div class="flex-1">
+        <a href="/index" class="text-xl font-bold">Patio Vision</a>
+    </div>
+    <div class="flex-none space-x-2 flex items-center">
+        <a href="/moto" class="btn btn-sm btn-secondary">Voltar para Motos</a>
+        <img th:if="${avatar} != null" th:src="${avatar}" class="w-10 h-10 rounded-full border-2 border-green-400"/>
+    </div>
+</nav>
+
+<div class="container mx-auto px-2 py-4 max-w-2xl">
+    <h1 class="text-2xl font-bold mb-4" th:text="${moto.id != null ? 'Editar Moto' : 'Nova Moto'}"></h1>
+
+    <div class="card bg-gray-900 shadow-xl">
+        <div class="card-body">
+            <form th:action="${moto.id != null ? '/moto/' + moto.id : '/moto/form'}" 
+                  th:method="${moto.id != null ? 'PUT' : 'POST'}" 
+                  th:object="${moto}" 
+                  class="space-y-4">
+                
+                <input type="hidden" th:field="*{id}"/>
+                
+                <div class="form-control">
+                    <label class="label">
+                        <span class="label-text text-green-300">Modelo</span>
+                    </label>
+                    <input type="text" 
+                           th:field="*{modelo}" 
+                           class="input input-bordered bg-gray-800 text-green-200"
+                           th:class="${#fields.hasErrors('modelo')} ? 'input input-bordered input-error bg-gray-800 text-green-200' : 'input input-bordered bg-gray-800 text-green-200'"
+                           placeholder="Ex: Honda CB600F"/>
+                    <div th:if="${#fields.hasErrors('modelo')}" class="text-error text-sm mt-1">
+                        <span th:errors="*{modelo}"></span>
+                    </div>
+                </div>
+
+                <div class="form-control">
+                    <label class="label">
+                        <span class="label-text text-green-300">Identificador IoT</span>
+                    </label>
+                    <input type="text" 
+                           th:field="*{iotIdentificador}" 
+                           class="input input-bordered bg-gray-800 text-green-200"
+                           th:class="${#fields.hasErrors('iotIdentificador')} ? 'input input-bordered input-error bg-gray-800 text-green-200' : 'input input-bordered bg-gray-800 text-green-200'"
+                           placeholder="Ex: IOT-123456"/>
+                    <div th:if="${#fields.hasErrors('iotIdentificador')}" class="text-error text-sm mt-1">
+                        <span th:errors="*{iotIdentificador}"></span>
+                    </div>
+                </div>
+
+                <div class="form-control">
+                    <label class="label">
+                        <span class="label-text text-green-300">Data de Entrada</span>
+                    </label>
+                    <input type="datetime-local" 
+                           th:field="*{dataEntrada}" 
+                           class="input input-bordered bg-gray-800 text-green-200"
+                           th:class="${#fields.hasErrors('dataEntrada')} ? 'input input-bordered input-error bg-gray-800 text-green-200' : 'input input-bordered bg-gray-800 text-green-200'"/>
+                    <div th:if="${#fields.hasErrors('dataEntrada')}" class="text-error text-sm mt-1">
+                        <span th:errors="*{dataEntrada}"></span>
+                    </div>
+                </div>
+
+                <div class="form-control">
+                    <label class="label">
+                        <span class="label-text text-green-300">Data de Saída (opcional)</span>
+                    </label>
+                    <input type="datetime-local" 
+                           th:field="*{dataSaida}" 
+                           class="input input-bordered bg-gray-800 text-green-200"/>
+                </div>
+
+                <div class="form-control">
+                    <label class="label">
+                        <span class="label-text text-green-300">Setor</span>
+                    </label>
+                    <select th:field="*{setorId}" 
+                            class="select select-bordered bg-gray-800 text-green-200"
+                            th:class="${#fields.hasErrors('setorId')} ? 'select select-bordered select-error bg-gray-800 text-green-200' : 'select select-bordered bg-gray-800 text-green-200'">
+                        <option value="">Selecione um setor</option>
+                        <option th:each="setor : ${setores}" 
+                                th:value="${setor.id}" 
+                                th:text="${setor.nome + ' (' + setor.patioNome + ')'}">
+                        </option>
+                    </select>
+                    <div th:if="${#fields.hasErrors('setorId')}" class="text-error text-sm mt-1">
+                        <span th:errors="*{setorId}"></span>
+                    </div>
+                </div>
+
+                <div class="form-control mt-6 flex-row gap-2 justify-end">
+                    <a href="/moto" class="btn btn-outline">Cancelar</a>
+                    <button type="submit" class="btn btn-primary">
+                        <span th:text="${moto.id != null ? 'Atualizar' : 'Salvar'}"></span>
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+</body>
+</html>

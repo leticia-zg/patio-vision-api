@@ -20,11 +20,6 @@ public class User {
 
     private String avatarUrl;
 
-    // Fields for form login
-    private String password; // BCrypt hashed
-
-    private String role = "ROLE_USER"; // simple single role model
-
     public User() {
     }
 

@@ -10,6 +10,6 @@ public class UserController {
 
     @GetMapping("/api/user")
     public OAuth2User getUser(@AuthenticationPrincipal OAuth2User user) {
-        return user; // retorna info do usuário para consumo via JS, se necessário
+        return user;
     }
 }

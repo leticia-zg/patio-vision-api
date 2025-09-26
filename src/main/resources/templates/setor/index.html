@@ -6,19 +6,21 @@
     <link href="https://cdn.jsdelivr.net/npm/daisyui@5" rel="stylesheet" type="text/css"/>
     <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
 </head>
-<body class="bg-black text-green-400 min-h-screen">
-<nav class="navbar bg-gray-900 shadow p-4">
+<body class="bg-black text-green-400 min-h-screen flex flex-col">
+<nav class="navbar bg-gray-900 shadow px-4 py-2">
     <div class="flex-1">
         <a href="/index" class="btn btn-ghost normal-case text-xl">Dashboard</a>
     </div>
     <div class="flex-none flex items-center space-x-2">
+    <a href="/patio" class="btn btn-sm btn-secondary">Gerenciar Pátios</a>
     <a href="/setor/form" class="btn btn-success">Novo Setor</a>
+    <a href="/logout" class="btn btn-sm btn-outline btn-error">Logout</a>
         <img th:if="${avatar != null}" th:src="${avatar}" class="w-10 h-10 rounded-full border-2 border-green-400"/>
     </div>
 </nav>
 
-<div class="container mx-auto p-6">
-    <div class="flex items-center justify-between mb-4">
+<div class="container mx-auto px-2 py-4">
+    <div class="flex items-center justify-between mb-2">
         <h1 class="text-2xl font-bold">Setores</h1>
         <form method="get" class="flex items-center space-x-2">
             <select name="patioId" class="select select-bordered bg-gray-900 text-green-200" onchange="this.form.submit()">
@@ -32,31 +34,31 @@
         </form>
     </div>
 
-    <div th:if="${message}" class="alert alert-success mb-4" th:text="${message}"></div>
+    <div th:if="${message}" class="alert alert-success mb-2" th:text="${message}"></div>
 
-    <div class="overflow-x-auto">
-        <table class="table table-zebra w-full">
+    <div class="overflow-x-auto rounded-lg shadow">
+        <table class="table w-full text-sm bg-black">
             <thead>
-            <tr>
-                <th>ID</th>
-                <th>Nome</th>
-                <th>Capacidade Máx.</th>
-                <th>Pátio</th>
-                <th>Ações</th>
+            <tr class="bg-gray-800 text-green-300">
+                <th class="py-2 px-2">ID</th>
+                <th class="py-2 px-2">Nome</th>
+                <th class="py-2 px-2">Capacidade Máx.</th>
+                <th class="py-2 px-2">Pátio</th>
+                <th class="py-2 px-2">Ações</th>
             </tr>
             </thead>
             <tbody>
-            <tr th:each="s : ${setores}">
-                <td th:text="${s.id}"></td>
-                <td th:text="${s.nome}"></td>
-                <td th:text="${s.capacidadeMaxima}"></td>
-                <td th:text="${s.patioNome}"></td>
-                <td class="flex space-x-2">
-                    <a th:href="@{'/setor/' + ${s.id} + '/edit'}" class="btn btn-xs btn-warning">Editar</a>
-                    <form th:action="@{'/setor/' + ${s.id}}" method="post" onsubmit="return confirm('Excluir setor?')">
+            <tr th:each="s : ${setores}" class="bg-gray-900 hover:bg-gray-700 text-green-400">
+                <td th:text="${s.id}" class="py-1 px-2"></td>
+                <td th:text="${s.nome}" class="py-1 px-2"></td>
+                <td th:text="${s.capacidadeMaxima}" class="py-1 px-2"></td>
+                <td th:text="${s.patioNome}" class="py-1 px-2"></td>
+                <td class="py-1 px-2 flex gap-1 flex-wrap">
+                    <a th:href="@{'/setor/' + ${s.id} + '/edit'}" class="btn btn-xs btn-outline btn-warning">Editar</a>
+                    <form th:action="@{'/setor/' + ${s.id}}" method="post" class="inline" onsubmit="return confirm('Excluir setor?')">
                         <input type="hidden" name="_method" value="delete"/>
                         <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
-                        <button class="btn btn-xs btn-error">Excluir</button>
+                        <button class="btn btn-xs btn-outline btn-error">Excluir</button>
                     </form>
                 </td>
             </tr>
@@ -64,5 +66,9 @@
         </table>
     </div>
 </div>
+
+<!-- Rodapé -->
+<div th:replace="~{fragments/footer :: footer}"></div>
+
 </body>
 </html>
