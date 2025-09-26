@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="pt-BR" data-theme="dracula" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8"/>
+    <title th:text="${setor.id == null} ? 'Novo Setor' : 'Editar Setor'"></title>
+    <link href="https://cdn.jsdelivr.net/npm/daisyui@5" rel="stylesheet" type="text/css"/>
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+</head>
+<body class="bg-black text-green-400 min-h-screen">
+<nav class="navbar bg-gray-900 shadow p-4">
+    <div class="flex-1">
+        <a href="/setor" class="text-xl font-bold">Setores</a>
+    </div>
+    <div class="flex-none flex items-center space-x-2">
+        <img th:if="${avatar != null}" th:src="${avatar}" class="w-10 h-10 rounded-full border-2 border-green-400"/>
+    </div>
+</nav>
+
+<div class="container mx-auto p-6 max-w-lg">
+    <h1 class="text-2xl font-bold mb-4" th:text="${setor.id == null} ? 'Cadastrar Setor' : 'Editar Setor'"></h1>
+
+    <form th:object="${setor}"
+          th:action="${setor.id == null} ? @{/setor/form} : @{/setor/{id}(id=${setor.id})}"
+          method="post" class="space-y-4">
+        <input type="hidden" th:if="${setor.id != null}" th:field="*{id}" />
+        <input type="hidden" th:if="${setor.id != null}" name="_method" value="put"/>
+        <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
+
+        <div class="form-control">
+            <label class="label"><span class="label-text text-green-300">Nome</span></label>
+            <input th:field="*{nome}" class="input input-bordered bg-gray-900 text-green-200" placeholder="Nome do Setor" required/>
+            <p th:if="${#fields.hasErrors('nome')}" th:errors="*{nome}" class="text-error text-sm mt-1"></p>
+        </div>
+
+        <div class="form-control">
+            <label class="label"><span class="label-text text-green-300">Capacidade Máxima</span></label>
+            <input type="number" min="0" th:field="*{capacidadeMaxima}" class="input input-bordered bg-gray-900 text-green-200" placeholder="Capacidade" required/>
+            <p th:if="${#fields.hasErrors('capacidadeMaxima')}" th:errors="*{capacidadeMaxima}" class="text-error text-sm mt-1"></p>
+        </div>
+
+        <div class="form-control">
+            <label class="label"><span class="label-text text-green-300">Pátio</span></label>
+            <select th:field="*{patioId}" class="select select-bordered bg-gray-900 text-green-200" required>
+                <option value="" disabled th:selected="${setor.patioId == null}">Selecione um Pátio</option>
+                <option th:each="p : ${patios}" th:value="${p.id}" th:text="${p.nome}"></option>
+            </select>
+            <p th:if="${#fields.hasErrors('patioId')}" th:errors="*{patioId}" class="text-error text-sm mt-1"></p>
+        </div>
+
+        <div class="flex space-x-2">
+            <button type="submit" class="btn btn-success">Salvar</button>
+            <a href="/setor" class="btn btn-ghost">Cancelar</a>
+        </div>
+    </form>
+</div>
+</body>
+</html>

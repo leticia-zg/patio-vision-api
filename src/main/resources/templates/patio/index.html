@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="pt-BR" data-theme="dracula" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Pátios - Listagem</title>
+    <link href="https://cdn.jsdelivr.net/npm/daisyui@5" rel="stylesheet" type="text/css"/>
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+</head>
+<body class="bg-black text-green-400 min-h-screen">
+<nav class="navbar bg-gray-900 shadow p-4">
+    <div class="flex-1">
+        <a href="/index" class="text-xl font-bold">Patio Vision</a>
+    </div>
+    <div class="flex-none space-x-2 flex items-center">
+    <a href="/setor" class="btn btn-sm btn-secondary">Gerenciar Setores</a>
+    <a href="/patio/form" class="btn btn-sm btn-primary">Novo Pátio</a>
+        <img th:if="${avatar} != null" th:src="${avatar}" class="w-10 h-10 rounded-full border-2 border-green-400"/>
+    </div>
+</nav>
+
+<div class="container mx-auto p-6">
+    <h1 class="text-2xl font-bold mb-4">Pátios</h1>
+
+    <div th:if="${message}" class="alert alert-success mb-4" th:text="${message}"></div>
+
+    <div class="overflow-x-auto">
+        <table class="table table-zebra w-full">
+            <thead>
+            <tr>
+                <th>ID</th>
+                <th>Nome</th>
+                <th>Setores</th>
+                <th>Ações</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="p : ${patios}">
+                <td th:text="${p.id}"></td>
+                <td th:text="${p.nome}"></td>
+                <td>
+                    <span th:text="${p.setores != null ? p.setores.size() : 0}"></span>
+                </td>
+                <td class="space-x-1 flex flex-wrap">
+                    <a th:href="@{'/patio/' + ${p.id} + '/edit'}" class="btn btn-xs btn-outline btn-info">Editar</a>
+                    <a th:href="@{'/setor'(patioId=${p.id})}" class="btn btn-xs btn-outline btn-success">Setores</a>
+                    <form th:action="@{'/patio/' + ${p.id}}" method="post" class="inline" onsubmit="return confirm('Tem certeza que deseja remover?')">
+                        <input type="hidden" name="_method" value="delete"/>
+                        <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
+                        <button type="submit" class="btn btn-xs btn-outline btn-error">Excluir</button>
+                    </form>
+                </td>
+            </tr>
+            <tr th:if="${#lists.isEmpty(patios)}">
+                <td colspan="4" class="text-center text-green-300">Nenhum pátio cadastrado</td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+</body>
+</html>

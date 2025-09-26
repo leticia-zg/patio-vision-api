@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <title>Patio Vision</title>
+    <link href="https://cdn.jsdelivr.net/npm/daisyui@5" rel="stylesheet" type="text/css" />
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+</head>
+<body class="bg-gray-900 text-green-400 min-h-screen flex items-center justify-center">
+<div class="w-full max-w-md p-8 rounded-2xl bg-gray-800 shadow-lg flex flex-col items-center gap-6">
+    <h1 class="text-3xl font-bold text-green-400">Patio Vision</h1>
+    <p class="text-gray-300">Selecione a conta para logar</p>
+
+    <div class="w-full flex flex-col gap-4 mt-4">
+        <a href="/oauth2/authorization/github"
+           class="btn bg-green-600 hover:bg-green-700 border-none text-white w-full">
+            Login com GitHub
+        </a>
+
+        <div class="divider text-gray-400">OU</div>
+
+        <a href="/oauth2/authorization/google"
+           class="btn bg-green-500 hover:bg-green-600 border-none text-white w-full">
+            Login com Google
+        </a>
+    </div>
+</div>
+</body>
+</html>

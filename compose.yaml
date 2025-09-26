@@ -1,0 +1,10 @@
+services:
+  postgres:
+    image: 'postgres:latest'
+    container_name: postgres_patio_vision
+    environment:
+      - 'POSTGRES_DB=patio_vision'
+      - 'POSTGRES_PASSWORD=patio_vision'
+      - 'POSTGRES_USER=patio_vision'
+    ports:
+      - '5432:5432'
