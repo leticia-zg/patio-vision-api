@@ -1,23 +1,14 @@
 <!DOCTYPE html>
 <html lang="pt-BR" data-theme="dracula" xmlns:th="http://www.thymeleaf.org">
-<head>
-    <meta charset="UTF-8"/>
-    <title th:text="${setor.id == null} ? 'Novo Setor' : 'Editar Setor'"></title>
-    <link href="https://cdn.jsdelivr.net/npm/daisyui@5" rel="stylesheet" type="text/css"/>
-    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
-</head>
-<body class="bg-black text-green-400 min-h-screen">
-<nav class="navbar bg-gray-900 shadow p-4">
-    <div class="flex-1">
-        <a href="/setor" class="text-xl font-bold">Setores</a>
-    </div>
-    <div class="flex-none flex items-center space-x-2">
-        <img th:if="${avatar != null}" th:src="${avatar}" class="w-10 h-10 rounded-full border-2 border-green-400"/>
-    </div>
-</nav>
+<head th:replace="~{fragments/header :: head(${setor.id == null} ? 'Novo Setor' : 'Editar Setor')}"></head>
+<body class="bg-black text-green-400 min-h-screen flex flex-col">
+<!-- Header -->
+<nav th:replace="~{fragments/header :: navbar}"></nav>
 
 <div class="container mx-auto p-6 max-w-lg">
     <h1 class="text-2xl font-bold mb-4" th:text="${setor.id == null} ? 'Cadastrar Setor' : 'Editar Setor'"></h1>
+
+    <div th:if="${message}" class="alert alert-success mb-4" th:text="${message}"></div>
 
     <form th:object="${setor}"
           th:action="${setor.id == null} ? @{/setor/form} : @{/setor/{id}(id=${setor.id})}"

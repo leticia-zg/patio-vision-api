@@ -13,6 +13,7 @@ public class UserService {
                 this.userRepository = userRepository;
                 this.passwordEncoder = passwordEncoder;
     }
+    
     public User register(OAuth2User principal) {
         var attrs = principal.getAttributes();
 
@@ -31,6 +32,27 @@ public class UserService {
         return userRepository
                 .findByEmail(email)
                 .orElseGet(() -> userRepository.save(new User(email, name, avatarUrl)));
+    }
+    
+    // 🔹 Registrar usuário via formulário
+    public User registerWithPassword(String email, String name, String password) {
+        if (userRepository.findByEmail(email).isPresent()) {
+            throw new RuntimeException("E-mail já cadastrado!");
+        }
+        
+        String encodedPassword = passwordEncoder.encode(password);
+        User user = User.withPassword(email, name, encodedPassword);
+        return userRepository.save(user);
+    }
+    
+    // 🔹 Buscar usuário por e-mail
+    public User findByEmail(String email) {
+        return userRepository.findByEmail(email).orElse(null);
+    }
+    
+    // 🔹 Verificar se e-mail existe
+    public boolean emailExists(String email) {
+        return userRepository.findByEmail(email).isPresent();
     }
 
 }

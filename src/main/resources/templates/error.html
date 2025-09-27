@@ -1,23 +1,27 @@
 <!DOCTYPE html>
-<html lang="en" data-theme="dracula">
-<head>
-    <meta charset="UTF-8">
-    <title>Patio Vision - Erro</title>
-    <link href="https://cdn.jsdelivr.net/npm/daisyui@5" rel="stylesheet" type="text/css" />
-    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
-    <link href="https://cdn.jsdelivr.net/npm/daisyui@5/themes.css" rel="stylesheet" type="text/css" />
-</head>
-<body class="bg-black text-green-400 min-h-screen flex items-center justify-center">
+<html lang="pt-BR" data-theme="dracula" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/header :: head('Erro')}"></head>
+<body class="bg-black text-green-400 min-h-screen flex flex-col">
 
-<div class="card bg-gray-900 border border-green-400 w-96">
-    <div class="card-body items-center text-center">
-        <h2 class="card-title text-green-400" th:text="${message}">Erro!</h2>
-        <p class="text-green-300 my-4" th:text="${error}">Ocorreu um problema.</p>
-        <div class="card-actions justify-center">
-            <a href="javascript:history.back()" class="btn btn-ghost w-24">Voltar</a>
+<!-- Header -->
+<nav th:replace="~{fragments/header :: navbar}"></nav>
+
+<div class="flex-1 flex items-center justify-center">
+    <div class="card bg-gray-900 border border-red-400 w-96">
+        <div class="card-body items-center text-center">
+            <h2 class="card-title text-red-400 text-2xl">Erro!</h2>
+            <p class="text-green-300 my-4" th:text="${message ?: 'Ocorreu um problema inesperado.'}">Ocorreu um problema.</p>
+            <p class="text-gray-400 text-sm mb-4" th:if="${error}" th:text="${error}"></p>
+            <div class="card-actions justify-center space-x-2">
+                <a href="javascript:history.back()" class="btn btn-ghost">Voltar</a>
+                <a href="/index" class="btn btn-primary">Dashboard</a>
+            </div>
         </div>
     </div>
 </div>
+
+<!-- Rodapé -->
+<div th:replace="~{fragments/footer :: footer}"></div>
 
 </body>
 </html>

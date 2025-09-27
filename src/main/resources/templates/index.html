@@ -1,25 +1,10 @@
 <!DOCTYPE html>
 <html lang="pt-BR" data-theme="dracula" xmlns:th="http://www.thymeleaf.org">
-<head>
-    <meta charset="UTF-8">
-    <title>Patio Vision Dashboard</title>
-    <link href="https://cdn.jsdelivr.net/npm/daisyui@5" rel="stylesheet" type="text/css"/>
-    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
-</head>
+<head th:replace="~{fragments/header :: head('Dashboard')}"></head>
 <body class="bg-black text-green-400 min-h-screen flex flex-col">
 
 <!-- Header -->
-<nav class="navbar bg-gray-900 shadow p-4">
-    <div class="flex-1">
-        <span class="text-xl font-bold">Patio Vision</span>
-    </div>
-    <div class="flex-none space-x-2 flex items-center">
-        <a href="/patio" class="btn btn-sm btn-primary">Cadastrar Pátio</a>
-        <a href="/setor" class="btn btn-sm btn-secondary">Gerenciar Setores</a>
-        <a href="/logout" class="btn btn-sm btn-outline btn-error">Logout</a>
-        <img th:if="${avatar} != null" th:src="${avatar}" class="w-10 h-10 rounded-full border-2 border-green-400"/>
-    </div>
-</nav>
+<nav th:replace="~{fragments/header :: navbar}"></nav>
 
 <!-- Seleção de Pátio -->
 <div class="flex justify-center my-6">

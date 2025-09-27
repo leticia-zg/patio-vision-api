@@ -1,26 +1,12 @@
 <!DOCTYPE html>
 <html lang="pt-BR" data-theme="dracula" xmlns:th="http://www.thymeleaf.org">
-<head>
-    <meta charset="UTF-8"/>
-    <title>Setores</title>
-    <link href="https://cdn.jsdelivr.net/npm/daisyui@5" rel="stylesheet" type="text/css"/>
-    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
-</head>
+<head th:replace="~{fragments/header :: head('Setores')}"></head>
 <body class="bg-black text-green-400 min-h-screen flex flex-col">
-<nav class="navbar bg-gray-900 shadow px-4 py-2">
-    <div class="flex-1">
-        <a href="/index" class="btn btn-ghost normal-case text-xl">Dashboard</a>
-    </div>
-    <div class="flex-none flex items-center space-x-2">
-    <a href="/patio" class="btn btn-sm btn-secondary">Gerenciar Pátios</a>
-    <a href="/setor/form" class="btn btn-success">Novo Setor</a>
-    <a href="/logout" class="btn btn-sm btn-outline btn-error">Logout</a>
-        <img th:if="${avatar != null}" th:src="${avatar}" class="w-10 h-10 rounded-full border-2 border-green-400"/>
-    </div>
-</nav>
+<!-- Header -->
+<nav th:replace="~{fragments/header :: navbar}"></nav>
 
-<div class="container mx-auto px-2 py-4">
-    <div class="flex items-center justify-between mb-2">
+<div class="container mx-auto px-4 py-6">
+    <div class="flex items-center justify-between mb-4">
         <h1 class="text-2xl font-bold">Setores</h1>
         <form method="get" class="flex items-center space-x-2">
             <select name="patioId" class="select select-bordered bg-gray-900 text-green-200" onchange="this.form.submit()">
@@ -34,7 +20,7 @@
         </form>
     </div>
 
-    <div th:if="${message}" class="alert alert-success mb-2" th:text="${message}"></div>
+    <div th:if="${message}" class="alert alert-success mb-4" th:text="${message}"></div>
 
     <div class="overflow-x-auto rounded-lg shadow">
         <table class="table w-full text-sm bg-black">

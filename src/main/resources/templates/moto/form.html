@@ -1,24 +1,14 @@
 <!DOCTYPE html>
 <html lang="pt-BR" data-theme="dracula" xmlns:th="http://www.thymeleaf.org">
-<head>
-    <meta charset="UTF-8">
-    <title th:text="${moto.id != null ? 'Editar Moto' : 'Nova Moto'}"></title>
-    <link href="https://cdn.jsdelivr.net/npm/daisyui@5" rel="stylesheet" type="text/css"/>
-    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
-</head>
-<body class="bg-black text-green-400 min-h-screen">
-<nav class="navbar bg-gray-900 shadow px-4 py-2">
-    <div class="flex-1">
-        <a href="/index" class="text-xl font-bold">Patio Vision</a>
-    </div>
-    <div class="flex-none space-x-2 flex items-center">
-        <a href="/moto" class="btn btn-sm btn-secondary">Voltar para Motos</a>
-        <img th:if="${avatar} != null" th:src="${avatar}" class="w-10 h-10 rounded-full border-2 border-green-400"/>
-    </div>
-</nav>
+<head th:replace="~{fragments/header :: head(${moto.id != null ? 'Editar Moto' : 'Nova Moto'})}"></head>
+<body class="bg-black text-green-400 min-h-screen flex flex-col">
+<!-- Header -->
+<nav th:replace="~{fragments/header :: navbar}"></nav>
 
-<div class="container mx-auto px-2 py-4 max-w-2xl">
+<div class="container mx-auto px-4 py-6 max-w-2xl">
     <h1 class="text-2xl font-bold mb-4" th:text="${moto.id != null ? 'Editar Moto' : 'Nova Moto'}"></h1>
+
+    <div th:if="${message}" class="alert alert-success mb-4" th:text="${message}"></div>
 
     <div class="card bg-gray-900 shadow-xl">
         <div class="card-body">

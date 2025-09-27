@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org">
+<head th:fragment="head(title)">
+    <meta charset="UTF-8">
+    <title th:text="${title} + ' - Patio Vision'">Patio Vision</title>
+    <link href="https://cdn.jsdelivr.net/npm/daisyui@5" rel="stylesheet" type="text/css"/>
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+</head>
+
+<body>
+<!-- Fragment básico do Header com navbar -->
+<nav th:fragment="navbar" class="navbar bg-gray-900 shadow p-4">
+    <div class="flex-1">
+        <a href="/index" class="text-xl font-bold text-green-400 hover:text-green-300 transition-colors cursor-pointer">
+            Patio Vision
+        </a>
+    </div>
+    <div class="flex-none space-x-2 flex items-center">
+        <a href="/patio" class="btn btn-sm btn-primary">Cadastrar Pátio</a>
+        <a href="/setor" class="btn btn-sm btn-secondary">Gerenciar Setores</a>
+        <a href="/logout" class="btn btn-sm btn-outline btn-error">Logout</a>
+        <img th:if="${avatar} != null" th:src="${avatar}" class="w-10 h-10 rounded-full border-2 border-green-400"/>
+    </div>
+</nav>
+</body>
+</html>
