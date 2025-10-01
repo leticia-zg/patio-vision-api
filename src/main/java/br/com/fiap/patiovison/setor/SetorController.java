@@ -1,8 +1,8 @@
 package br.com.fiap.patiovison.setor;
 
-import br.com.fiap.patiovison.helper.AppConstants;
-import br.com.fiap.patiovison.helper.BaseController;
 import br.com.fiap.patiovison.patio.PatioService;
+import br.com.fiap.patiovison.user.User;
+import br.com.fiap.patiovison.user.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
@@ -15,15 +15,15 @@ import jakarta.validation.Valid;
 
 /**
  * Controller responsável pelo gerenciamento de setores.
- * Extende BaseController para reutilizar funcionalidades comuns.
  */
 @Controller
 @RequestMapping("/setor")
 @RequiredArgsConstructor
-public class SetorController extends BaseController {
+public class SetorController {
 
     private final SetorService setorService;
     private final PatioService patioService;
+    private final UserService userService;
 
     @GetMapping
     public String index(@RequestParam(value = "patioId", required = false) Long patioId,
@@ -34,66 +34,66 @@ public class SetorController extends BaseController {
             setorService.findByPatioId(patioId) : 
             setorService.findAll();
             
-        model.addAttribute(AppConstants.ATTR_SETORES, setores);
+        model.addAttribute("setores", setores);
         model.addAttribute("patioSelecionado", patioId);
-        model.addAttribute(AppConstants.ATTR_PATIOS, patioService.findAll());
-        addPrincipal(model, authentication);
+        model.addAttribute("patios", patioService.findAll());
+        addUserInfoToModel(model, authentication);
         
-        return AppConstants.VIEW_SETOR_INDEX;
+        return "setor/index";
     }
 
     @GetMapping("/form")
     public String form(SetorDTO setorDTO, Model model, Authentication authentication) {
-        model.addAttribute(AppConstants.ATTR_SETOR, setorDTO);
+        model.addAttribute("setor", setorDTO);
         addPatiosToModel(model);
-        addPrincipal(model, authentication);
-        return AppConstants.VIEW_SETOR_FORM;
+        addUserInfoToModel(model, authentication);
+        return "setor/form";
     }
 
     @PostMapping("/form")
     public String save(@Valid SetorDTO setorDTO, BindingResult result, 
                        RedirectAttributes redirect, Authentication authentication, Model model) {
         if (result.hasErrors()) {
-            model.addAttribute(AppConstants.ATTR_SETOR, setorDTO);
+            model.addAttribute("setor", setorDTO);
             addPatiosToModel(model);
-            addPrincipal(model, authentication);
-            return AppConstants.VIEW_SETOR_FORM;
+            addUserInfoToModel(model, authentication);
+            return "setor/form";
         }
         
         setorService.save(setorDTO);
-        redirect.addFlashAttribute(AppConstants.ATTR_MESSAGE, AppConstants.MSG_SETOR_SALVO);
-        return AppConstants.REDIRECT_SETOR;
+        redirect.addFlashAttribute("message", "Setor salvo com sucesso!");
+        return "redirect:/setor";
     }
 
     @GetMapping("/{id}/edit")
     public String editForm(@PathVariable Long id, Model model, Authentication authentication) {
         SetorDTO dto = setorService.findById(id);
-        model.addAttribute(AppConstants.ATTR_SETOR, dto);
+        model.addAttribute("setor", dto);
         addPatiosToModel(model);
-        addPrincipal(model, authentication);
-        return AppConstants.VIEW_SETOR_FORM;
+        addUserInfoToModel(model, authentication);
+        return "setor/form";
     }
 
     @PutMapping("/{id}")
     public String update(@Valid SetorDTO setorDTO, BindingResult result, 
                          RedirectAttributes redirect, Authentication authentication, Model model) {
         if (result.hasErrors()) {
-            model.addAttribute(AppConstants.ATTR_SETOR, setorDTO);
+            model.addAttribute("setor", setorDTO);
             addPatiosToModel(model);
-            addPrincipal(model, authentication);
-            return AppConstants.VIEW_SETOR_FORM;
+            addUserInfoToModel(model, authentication);
+            return "setor/form";
         }
         
         setorService.save(setorDTO);
-        redirect.addFlashAttribute(AppConstants.ATTR_MESSAGE, AppConstants.MSG_SETOR_ATUALIZADO);
-        return AppConstants.REDIRECT_SETOR;
+        redirect.addFlashAttribute("message", "Setor atualizado com sucesso!");
+        return "redirect:/setor";
     }
 
     @DeleteMapping("/{id}")
     public String delete(@PathVariable Long id, RedirectAttributes redirect) {
         setorService.delete(id);
-        redirect.addFlashAttribute(AppConstants.ATTR_MESSAGE, AppConstants.MSG_SETOR_REMOVIDO);
-        return AppConstants.REDIRECT_SETOR;
+        redirect.addFlashAttribute("message", "Setor removido com sucesso!");
+        return "redirect:/setor";
     }
 
     /**
@@ -101,6 +101,34 @@ public class SetorController extends BaseController {
      * Evita duplicação de código nos métodos de formulário.
      */
     private void addPatiosToModel(Model model) {
-        model.addAttribute(AppConstants.ATTR_PATIOS, patioService.findAll());
+        model.addAttribute("patios", patioService.findAll());
+    }
+
+    /**
+     * Adiciona informações do usuário autenticado ao modelo, incluindo avatar.
+     * @param model Modelo do Spring MVC
+     * @param authentication Informações de autenticação
+     */
+    private void addUserInfoToModel(Model model, Authentication authentication) {
+        if (authentication != null) {
+            String userIdentifier = authentication.getName();
+            String userEmail = userIdentifier;
+            
+            // Para OAuth2, precisamos extrair o email dos atributos
+            if (authentication.getPrincipal() instanceof org.springframework.security.oauth2.core.user.OAuth2User oauth2User) {
+                userEmail = (String) oauth2User.getAttributes().get("email");
+                if (userEmail == null) {
+                    userEmail = oauth2User.getAttributes().get("login") + "@github.com";
+                }
+            }
+            
+            model.addAttribute("username", userEmail);
+            
+            // Busca informações completas do usuário para obter o avatar
+            User user = userService.findByEmail(userEmail);
+            if (user != null && user.getAvatarUrl() != null) {
+                model.addAttribute("avatar", user.getAvatarUrl());
+            }
+        }
     }
 }

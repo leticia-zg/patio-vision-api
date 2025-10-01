@@ -31,6 +31,22 @@ public class UserService {
 
         return userRepository
                 .findByEmail(email)
+                .map(existingUser -> {
+                    // Atualiza dados do usuário existente se necessário
+                    boolean updated = false;
+                    if (existingUser.getName() == null || !existingUser.getName().equals(name)) {
+                        existingUser.setName(name);
+                        updated = true;
+                    }
+                    if (avatarUrl != null && (existingUser.getAvatarUrl() == null || !existingUser.getAvatarUrl().equals(avatarUrl))) {
+                        existingUser.setAvatarUrl(avatarUrl);
+                        updated = true;
+                    }
+                    if (updated) {
+                        return userRepository.save(existingUser);
+                    }
+                    return existingUser;
+                })
                 .orElseGet(() -> userRepository.save(new User(email, name, avatarUrl)));
     }
     

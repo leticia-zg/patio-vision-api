@@ -1,10 +1,10 @@
 package br.com.fiap.patiovison.dashboard;
 
-import br.com.fiap.patiovison.helper.AppConstants;
-import br.com.fiap.patiovison.helper.BaseController;
 import br.com.fiap.patiovison.patio.Patio;
 import br.com.fiap.patiovison.patio.PatioService;
 import br.com.fiap.patiovison.setor.Setor;
+import br.com.fiap.patiovison.user.User;
+import br.com.fiap.patiovison.user.UserService;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -20,12 +20,14 @@ import java.util.stream.Collectors;
  * Exibe informações de ocupação dos setores por pátio.
  */
 @Controller
-public class DashboardController extends BaseController {
+public class DashboardController {
 
     private final PatioService patioService;
+    private final UserService userService;
 
-    public DashboardController(PatioService patioService) {
+    public DashboardController(PatioService patioService, UserService userService) {
         this.patioService = patioService;
+        this.userService = userService;
     }
 
     @GetMapping("/index")
@@ -34,10 +36,10 @@ public class DashboardController extends BaseController {
         
         // Busca lista de pátios para seleção
         List<Patio> patios = patioService.findAllEntities();
-        model.addAttribute(AppConstants.ATTR_PATIOS, patios);
+        model.addAttribute("patios", patios);
         
-        // Adiciona informações do usuário autenticado
-        addPrincipal(model, authentication);
+        // Adiciona informações do usuário autenticado incluindo avatar
+        addUserInfoToModel(model, authentication);
 
         // Determina pátio selecionado
         Patio selectedPatio = determineSelectedPatio(patios, patioId);
@@ -49,7 +51,7 @@ public class DashboardController extends BaseController {
             model.addAttribute("setorOcupacao", setorOcupacao);
         }
 
-        return AppConstants.VIEW_INDEX;
+        return "index";
     }
 
     /**
@@ -91,6 +93,46 @@ public class DashboardController extends BaseController {
         }
         
         int motosAtuais = setor.getMotos() != null ? setor.getMotos().size() : 0;
-        return (int) ((double) motosAtuais * AppConstants.PERCENTUAL_MULTIPLICADOR / setor.getCapacidadeMaxima());
+        return (int) ((double) motosAtuais * 100.0 / setor.getCapacidadeMaxima());
+    }
+
+    /**
+     * Adiciona informações do usuário autenticado ao modelo, incluindo avatar.
+     * @param model Modelo do Spring MVC
+     * @param authentication Informações de autenticação
+     */
+    private void addUserInfoToModel(Model model, Authentication authentication) {
+        if (authentication != null) {
+            String userIdentifier = authentication.getName();
+            String userEmail = userIdentifier;
+            
+            // Para OAuth2, precisamos extrair o email dos atributos
+            if (authentication.getPrincipal() instanceof org.springframework.security.oauth2.core.user.OAuth2User oauth2User) {
+                userEmail = (String) oauth2User.getAttributes().get("email");
+                if (userEmail == null) {
+                    userEmail = oauth2User.getAttributes().get("login") + "@github.com";
+                }
+                System.out.println("DEBUG OAuth2 User: ID=" + userIdentifier + ", Email=" + userEmail);
+            }
+            
+            model.addAttribute("username", userEmail);
+            
+            System.out.println("DEBUG: Buscando usuário com email: " + userEmail);
+            System.out.println("DEBUG: Tipo de authentication: " + authentication.getPrincipal().getClass());
+            
+            // Busca informações completas do usuário para obter o avatar
+            User user = userService.findByEmail(userEmail);
+            if (user != null) {
+                System.out.println("DEBUG: Usuário encontrado - ID: " + user.getId() + ", Nome: " + user.getName() + ", Avatar: " + user.getAvatarUrl());
+                if (user.getAvatarUrl() != null && !user.getAvatarUrl().isEmpty()) {
+                    model.addAttribute("avatar", user.getAvatarUrl());
+                    System.out.println("DEBUG: Avatar adicionado ao modelo: " + user.getAvatarUrl());
+                } else {
+                    System.out.println("DEBUG: Usuário sem avatar válido");
+                }
+            } else {
+                System.out.println("DEBUG: Usuário NÃO encontrado no banco de dados");
+            }
+        }
     }
 }

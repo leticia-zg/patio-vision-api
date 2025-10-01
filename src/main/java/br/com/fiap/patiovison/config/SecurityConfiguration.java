@@ -23,6 +23,7 @@ public class SecurityConfiguration {
         return http
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/login", "/register", "/debug/**", "/css/**", "/js/**", "/images/**").permitAll()
+                        .requestMatchers("/api/**").permitAll()  // Libera todos os endpoints REST da API
                         .anyRequest().authenticated()
                 )
                 // Configuração de login via formulário
@@ -47,6 +48,10 @@ public class SecurityConfiguration {
                         .logoutSuccessUrl("/login?logout=true")
                         .invalidateHttpSession(true)
                         .deleteCookies("JSESSIONID")
+                )
+                // Desabilita CSRF para endpoints da API para facilitar testes
+                .csrf(csrf -> csrf
+                        .ignoringRequestMatchers("/api/**")
                 )
                 .build();
     }

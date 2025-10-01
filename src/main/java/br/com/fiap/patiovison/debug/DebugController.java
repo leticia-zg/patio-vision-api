@@ -4,10 +4,14 @@ import br.com.fiap.patiovison.user.User;
 import br.com.fiap.patiovison.user.UserService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+
+import java.util.HashMap;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/debug")
@@ -17,6 +21,33 @@ public class DebugController {
     
     private final UserService userService;
     
+    @GetMapping("/current-user")
+    public Map<String, Object> getCurrentUser(Authentication authentication) {
+        Map<String, Object> result = new HashMap<>();
+        
+        if (authentication != null) {
+            result.put("authenticated", true);
+            result.put("username", authentication.getName());
+            result.put("principalType", authentication.getPrincipal().getClass().getSimpleName());
+            
+            User user = userService.findByEmail(authentication.getName());
+            if (user != null) {
+                result.put("userFound", true);
+                result.put("userId", user.getId());
+                result.put("userName", user.getName());
+                result.put("userEmail", user.getEmail());
+                result.put("avatarUrl", user.getAvatarUrl());
+                result.put("hasPassword", user.getPassword() != null);
+            } else {
+                result.put("userFound", false);
+            }
+        } else {
+            result.put("authenticated", false);
+        }
+        
+        return result;
+    }
+
     @GetMapping("/test-user-creation")
     public String testUserCreation(@RequestParam String email, 
                                   @RequestParam String name, 

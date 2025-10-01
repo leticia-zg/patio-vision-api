@@ -30,7 +30,7 @@
             <!-- Barra de ocupação -->
             <div class="w-full h-6 bg-gray-800 rounded mt-2">
                 <div th:style="'width:' + ${setorOcupacao[s.id]} + '%; background-color:' +
-                                 (${setorOcupacao[s.id]} >= ${T(br.com.fiap.patiovison.helper.AppConstants).OCUPACAO_MAXIMA_PERCENTUAL} ? '#ff5555' : '#50fa7b')"
+                                 (${setorOcupacao[s.id]} >= 80 ? '#ff5555' : '#50fa7b')"
                      class="h-6 rounded">
                 </div>
             </div>
