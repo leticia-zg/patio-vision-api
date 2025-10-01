@@ -66,7 +66,7 @@ O **Patio Vision** é um sistema completo de gerenciamento de pátios de motos q
 
 ### 1. Clone o repositório
 ```bash
-git clone https://github.com/AnaCarolSant/patio-vision-api.git
+git clone [https://github.com/AnaCarolSant/patio-vision-api.git](https://github.com/leticia-zg/patio-vision-api.git)
 cd patio-vision-api
 ```
 
