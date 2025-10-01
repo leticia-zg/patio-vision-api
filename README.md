@@ -67,6 +67,10 @@ O **Patio Vision** é um sistema completo de gerenciamento de pátios de motos q
 - Scripts de testes da API (curl/Postman/HTTP Client):  
   ➜ [scripts/tests/](./scripts/tests/)
 
+# 🛠️ Arquitetura da solução
+  
+  ➜ [ARQUITETURA.md](./ARQUITETURA.md)
+
 ## 🚀 Como Executar o Projeto
 
 ### Pré-requisitos
