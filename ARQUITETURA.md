@@ -6,68 +6,60 @@
 flowchart LR
   %% ===== GITHUB =====
   subgraph GitHub["GitHub"]
-    DEV[Developer] -- "git push (main)" --> REPO["Repositório<br/>leticia-zg/patio-vision-api"]
-    REPO -->|CI/CD Workflow| GHA["GitHub Actions<br/>Build & Deploy"]
+    DEV["Developer"]
+    REPO["Repositório<br/>leticia-zg/patio-vision-api"]
+    GHA["GitHub Actions<br/>Build & Deploy"]
+    DEV -->|git push (main)| REPO
+    REPO --> GHA
   end
 
   %% ===== AZURE =====
   subgraph Azure["Microsoft Azure"]
     subgraph RG["Resource Group: rg-patio-vision"]
       PLAN["App Service Plan<br/>plan-pg-rm556219<br/>(Linux F1)"]
-      APP["Web App<br/>app-pg-rm556219"]
+      APP["Web App<br/>app-pg-rm556219<br/>Java 17"]
       DB["PostgreSQL Flexible Server<br/>pg-rm1556219<br/>DB: patio_vision"]
-      AI["Application Insights<br/>ai-pg-rm1556219"]
+      AI["Application Insights<br/>ai-pg-rm556219"]
     end
   end
 
-  %% ===== RELAÇÕES =====
-  PLAN --> APP
-  GHA -->|Publish Profile / ZIP (JAR)| APP
-  USER[Usuário] -->|HTTPS 443| APP
+  %% Ligações principais
+  GHA -->|Publish Profile<br/>(ZIP JAR)| APP
   APP -->|JDBC (SSL/TLS 5432)| DB
   APP -->|Telemetry| AI
+  USER["Usuário<br/>Navegador / Cliente"] -->|HTTPS 443| APP
 ```
 
-## 2) Fluxo de Deploy (CI/CD — GitHub Actions)
-
-1. **Developer** faz `git push` na branch **main** do repositório.
-2. O **GitHub Actions** é disparado pelo workflow (`azure-webapps.yml`).  
-   - **Build**: compila o projeto Java (Maven) e gera o `*.jar` em `target/`.
-   - **Deploy**: usa a action `azure/webapps-deploy` com o **Publish Profile** do Web App para publicar o artefato no Azure App Service.
-3. O **App Service (app-pg-rm556219)** inicia o container Java 17 e sobe a aplicação.
+## 2) Fluxo de Deploy (CI/CD)
+1. **Developer** faz `git push` para a branch **main** do repositório `leticia-zg/patio-vision-api`.
+2. O **GitHub Actions** executa o workflow: compila o projeto Java 17 (Maven/Gradle), gera o JAR e usa o **publish profile** do App Service para publicar no **Web App** `app-pg-rm556219`.
+3. O App Service reinicia automaticamente e sobe o container gerenciado com o JAR na porta interna 80.
 
 ## 3) Execução em Produção (PaaS)
+- O **Web App** roda como PaaS (Linux, Java 17), sem VM gerenciada.
+- Conecta no **PostgreSQL Flexible Server** `pg-rm1556219` (DB `patio_vision`) via **JDBC com SSL**.
+- Envia métricas e logs para **Application Insights** `ai-pg-rm556219`.
+- Usuários acessam via **HTTPS** (`app-pg-rm556219.azurewebsites.net`).
 
-- **Plano (plan-pg-rm556219)**: camada Linux **F1 (Free)**.
-- **Web App** serve a aplicação Spring Boot na porta interna 80 (App Service faz o binding automaticamente).
-- **Banco**: **PostgreSQL Flexible Server `pg-rm1556219`**, database `patio_vision`.
-- **Conexão**: string JDBC com `sslmode=require` (TLS) via 5432.
-- **Telemetria**: **Application Insights `ai-pg-rm1556219`** (variável `APPLICATIONINSIGHTS_CONNECTION_STRING`).
+## 4) Variáveis/Configuração Importante
+- App Settings no Web App:
+  - `SPRING_DATASOURCE_URL=jdbc:postgresql://pg-rm1556219.postgres.database.azure.com:5432/patio_vision?sslmode=require`
+  - `SPRING_DATASOURCE_USERNAME=pgadmin`
+  - `SPRING_DATASOURCE_PASSWORD=***`
+  - `SPRING_PROFILES_ACTIVE=prod`
+  - `APPLICATIONINSIGHTS_CONNECTION_STRING=InstrumentationKey=...`
 
-## 4) Configuração por Variáveis (App Settings do Web App)
+## 5) Segurança e Boas Práticas
+- Conexão ao banco com **SSL/TLS** obrigatório (`sslmode=require`).
+- Credenciais sensíveis em **Secrets** / **App Settings** (não versionadas).
+- Telemetria e tracing via **Application Insights**.
+- PaaS reduz superfície de ataque (sem root/SSH exposto para app).
 
-As chaves principais (definidas via Azure CLI) são:
+---
 
-- `SPRING_DATASOURCE_URL=jdbc:postgresql://pg-rm1556219.postgres.database.azure.com:5432/patio_vision?sslmode=require`  
-- `SPRING_DATASOURCE_USERNAME=pgadmin`  
-- `SPRING_DATASOURCE_PASSWORD=***`  
-- `SPRING_JPA_DATABASE_PLATFORM=org.hibernate.dialect.PostgreSQLDialect`  
-- `SPRING_DATASOURCE_DRIVER_CLASS_NAME=org.postgresql.Driver`  
-- `APPLICATIONINSIGHTS_CONNECTION_STRING=InstrumentationKey=...`  
-- (opcional) `SPRING_PROFILES_ACTIVE=prod`
-
-Essas variáveis **não** ficam no repositório — são gerenciadas no **App Service**.
-
-## 5) Segurança e Acesso
-
-- Tráfego ao app via **HTTPS 443**: `https://app-pg-rm556219.azurewebsites.net`  
-- Tráfego App → DB via **JDBC (TLS)**: porta **5432**.
-- Publicação apenas via **Publish Profile** (credencial secreta) armazenada em **GitHub Secrets**.
-
-## 6) Recursos Criados (Azure)
-
-- **Resource Group**: `rg-patio-vision`  
-- **App Service Plan**: `plan-pg-rm556219` (Linux F1)  
-- **Web App**: `app-pg-rm556219`  
-- **PostgreSQL Flexible Server**: `pg-rm1556219` + **DB** `patio_vision`  
-- **Application Insights**: `ai-pg-rm1556219`
+**Recursos provisionados:**
+- RG: `rg-patio-vision`
+- App Service Plan: `plan-pg-rm556219` (Linux F1)
+- Web App: `app-pg-rm556219` (Java 17)
+- PostgreSQL Flexible Server: `pg-rm1556219` (DB `patio_vision`)
+- Application Insights: `ai-pg-rm556219`
