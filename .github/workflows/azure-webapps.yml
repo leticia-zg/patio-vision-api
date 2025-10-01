@@ -1,77 +1,41 @@
-name: Build & Deploy (Azure Web App • Gradle)
+# Docs: https://github.com/Azure/webapps-deploy
+name: 'Build and deploy JAR app to Azure Web App: app-pg-rm556219'
 
 on:
   push:
-    branches: [ "main" ]
+    branches:
+      - main
   workflow_dispatch:
 
-concurrency:
-  group: "prod-deploy"
-  cancel-in-progress: false
-
-permissions:
-  contents: read
-
 jobs:
-  build:
+  build-and-deploy:
     runs-on: ubuntu-latest
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
 
-      - name: Set up JDK 17
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Java version
         uses: actions/setup-java@v4
         with:
           distribution: temurin
-          java-version: 17
-
-      - name: Cache Gradle
-        uses: actions/cache@v4
-        with:
-          path: |
-            ~/.gradle/caches
-            ~/.gradle/wrapper
-          key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle*', '**/gradle-wrapper.properties') }}
-          restore-keys: ${{ runner.os }}-gradle-
+          java-version: '17'
 
       - name: Make gradlew executable
         run: chmod +x ./gradlew
 
-      # Build com as credenciais do banco (dos Secrets)
-      - name: Build with Gradle (bootJar)
+      # Build com as credenciais do banco vindas dos Secrets (como você pediu)
+      - name: Build with Gradle
         run: ./gradlew clean bootJar -x test
         env:
           SPRING_DATASOURCE_URL: ${{ secrets.SPRING_DATASOURCE_URL }}
           SPRING_DATASOURCE_USERNAME: ${{ secrets.SPRING_DATASOURCE_USERNAME }}
           SPRING_DATASOURCE_PASSWORD: ${{ secrets.SPRING_DATASOURCE_PASSWORD }}
 
-      - name: Upload artifact
-        uses: actions/upload-artifact@v4
-        with:
-          name: java-app
-          path: build/libs/*.jar
-
-  deploy:
-    runs-on: ubuntu-latest
-    needs: build
-    steps:
-      - name: Download artifact
-        uses: actions/download-artifact@v4
-        with:
-          name: java-app
-          path: .
-
-      # 🔐 Login no Azure usando publish profile (v1 aceita publish-profile)
-      - name: Azure Login (publish profile)
-        uses: azure/login@v1
-        with:
-          publish-profile: ${{ secrets.AZURE_WEBAPP_PUBLISH_PROFILE }}
-          # se você preferir usar o secret com nome longo, troque pela linha abaixo:
-          # publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_1D132643044E4076BFD51F5CA2CDC096 }}
-
-      # 🚀 Deploy do JAR
       - name: Deploy to Azure Web App
-        uses: azure/webapps-deploy@v3
+        uses: azure/webapps-deploy@v2
         with:
-          app-name: app-pg-rm556219
-          package: "*.jar"
+          app-name: 'app-pg-rm556219'             # seu Web App
+          slot-name: 'production'
+          publish-profile: ${{ secrets.AZURE_WEBAPP_PUBLISH_PROFILE }}
+          # se seu secret tem OUTRO nome (ex.: AzureAppService_PublishProfile_XXXX), troque a linha acima
+          package: 'build/libs/*.jar'
