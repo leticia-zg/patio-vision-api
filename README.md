@@ -57,6 +57,16 @@ O **Patio Vision** é um sistema completo de gerenciamento de pátios de motos q
 - **Autenticação**: OAuth2 (GitHub/Google) + Form-based
 - **Containerização**: Docker e Docker Compose
 
+## 🚀 Deploy
+
+- Passo a passo do deploy no Azure App Service:  
+  ➜ [DEPLOY.md](./DEPLOY.md)
+
+## 🧪 Testes (scripts)
+
+- Scripts de testes da API (curl/Postman/HTTP Client):  
+  ➜ [scripts/tests/](./scripts/tests/)
+
 ## 🚀 Como Executar o Projeto
 
 ### Pré-requisitos
