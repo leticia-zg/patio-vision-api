@@ -5,29 +5,31 @@
 ```mermaid
 flowchart LR
   %% ===== GITHUB =====
-  subgraph GitHub["GitHub"]
-    DEV["Developer"]
-    REPO["Repositório<br/>leticia-zg/patio-vision-api"]
-    GHA["GitHub Actions<br/>Build & Deploy"]
-    DEV -->|git push (main)| REPO
+  subgraph GitHub
+    DEV[Developer]
+    REPO[Repository: leticia-zg/patio-vision-api]
+    GHA[GitHub Actions - Build & Deploy]
+    DEV -->|git push main| REPO
     REPO --> GHA
   end
 
   %% ===== AZURE =====
-  subgraph Azure["Microsoft Azure"]
+  subgraph Azure
     subgraph RG["Resource Group: rg-patio-vision"]
-      PLAN["App Service Plan<br/>plan-pg-rm556219<br/>(Linux F1)"]
-      APP["Web App<br/>app-pg-rm556219<br/>Java 17"]
-      DB["PostgreSQL Flexible Server<br/>pg-rm1556219<br/>DB: patio_vision"]
-      AI["Application Insights<br/>ai-pg-rm556219"]
+      PLAN["App Service Plan: plan-pg-rm556219 (Linux F1)"]
+      APP["Web App: app-pg-rm556219"]
+      AI["Application Insights: ai-pg-rm556219"]
+      DB["PostgreSQL Flexible Server: pg-rm1556219\nDatabase: patio_vision"]
     end
   end
 
-  %% Ligações principais
-  GHA -->|Publish Profile<br/>(ZIP JAR)| APP
-  APP -->|JDBC (SSL/TLS 5432)| DB
+  %% ===== FLUXOS =====
+  USER((Usuário)) -->|HTTP| APP
+  GHA -->|deploy JAR| APP
+  APP -->|JDBC SSL\nSPRING_DATASOURCE_*| DB
   APP -->|Telemetry| AI
-  USER["Usuário<br/>Navegador / Cliente"] -->|HTTPS 443| APP
+  PLAN -. hospeda .- APP
+
 ```
 
 ## 2) Fluxo de Deploy (CI/CD)
