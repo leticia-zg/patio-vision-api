@@ -37,7 +37,7 @@ jobs:
       - name: Make gradlew executable
         run: chmod +x ./gradlew
 
-      # Build com as credenciais do banco vindas dos Secrets (como você pediu)
+      # Build com credenciais do banco via Secrets (seu pedido)
       - name: Build with Gradle (bootJar)
         run: ./gradlew clean bootJar -x test
         env:
@@ -61,14 +61,12 @@ jobs:
           name: java-app
           path: .
 
-      # Login no Azure usando o Publish Profile do app-pg-rm556219
-      - name: Azure Login (publish profile)
-        uses: azure/login@v2
-        with:
-          publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_1D132643044E4076BFD51F5CA2CDC096 }}
-
+      # Sem azure/login. Usamos o publish profile direto no deploy.
       - name: Deploy to Azure Web App
         uses: azure/webapps-deploy@v3
         with:
           app-name: app-pg-rm556219
           package: "*.jar"
+          publish-profile: ${{ secrets.AZURE_WEBAPP_PUBLISH_PROFILE }}
+          # se você preferir manter o secret com nome longo, troque pela linha abaixo:
+          # publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_1D132643044E4076BFD51F5CA2CDC096 }}
