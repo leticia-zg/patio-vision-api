@@ -29,18 +29,12 @@ jobs:
 
       - name: Build with Gradle (bootJar)
         run: ./gradlew clean bootJar -x test
-        env:
-          # Estas vars só são necessárias se seu build precisar conectar no DB em build-time (geralmente NÃO precisa).
-          # Mantemos aqui para compatibilidade com seu projeto.
-          SPRING_DATASOURCE_URL: ${{ secrets.SPRING_DATASOURCE_URL }}
-          SPRING_DATASOURCE_USERNAME: ${{ secrets.SPRING_DATASOURCE_USERNAME }}
-          SPRING_DATASOURCE_PASSWORD: ${{ secrets.SPRING_DATASOURCE_PASSWORD }}
 
       - name: Upload artifact
         uses: actions/upload-artifact@v4
         with:
           name: java-app
-          path: build/libs/*.jar  # mantém wildcard (ex.: app-0.0.1-SNAPSHOT.jar)
+          path: build/libs/*.jar
 
   deploy:
     runs-on: ubuntu-latest
@@ -55,6 +49,6 @@ jobs:
       - name: Deploy to Azure Web App
         uses: azure/webapps-deploy@v3
         with:
-          app-name: app-pg-rm556219
+          app-name: app-pg-rm1556219      # <<< CONFERE este nome
           package: "*.jar"
           publish-profile: ${{ secrets.AZURE_WEBAPP_PUBLISH_PROFILE }}
