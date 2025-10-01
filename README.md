@@ -49,6 +49,13 @@ O **Patio Vision** é um sistema completo de gerenciamento de pátios de motos q
    - Login tradicional com usuário e senha
    - Registro de novos usuários
 
+## 💼 Benefícios para o Negócio
+- **Visibilidade em tempo real** da ocupação (evita superlotação e melhora o uso do espaço).
+- **Agilidade operacional** no registro de entrada/saída, reduzindo filas e erros manuais.
+- **Rastreabilidade e auditoria** (histórico por moto/setor/pátio).
+- **Redução de perdas e retrabalhos** com dados padronizados e integrações IoT.
+- **Base para decisões** (indicadores e métricas) e **escalabilidade** na nuvem.
+
 ## 🛠️ Tecnologias Utilizadas
 
 - **Backend**: Spring Boot 3.5.4, Spring Security, Spring Data JPA
@@ -67,7 +74,7 @@ O **Patio Vision** é um sistema completo de gerenciamento de pátios de motos q
 - Scripts de testes da API (curl/Postman/HTTP Client):  
   ➜ [scripts/tests/](./scripts/tests/)
 
-# 🛠️ Arquitetura da solução
+## 🛠️ Arquitetura da solução
   
   ➜ [ARQUITETURA.md](./ARQUITETURA.md)
 
