@@ -66,6 +66,6 @@ jobs:
       - name: Deploy to Azure Web App
         uses: azure/webapps-deploy@v3
         with:
-          app-name: app-pg-rm1556219
+          app-name: app-pg-rm556219
           package: "*.jar"
           publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_1D132643044E4076BFD51F5CA2CDC096}}
