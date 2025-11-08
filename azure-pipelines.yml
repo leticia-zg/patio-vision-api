@@ -20,7 +20,7 @@ steps:
 
 - task: Docker@2
   inputs:
-    containerRegistry: 'servconn556219'
+    containerRegistry: 'acr558090'
     repository: 'javapostgre'
     command: 'buildAndPush'
     Dockerfile: '**/Dockerfile'
