@@ -5,38 +5,44 @@
 ```mermaid
 flowchart LR
 
-USER((Usuário Final))
+USER((Usuario Final))
 DEV((Desenvolvedor))
 
 subgraph GitHub["GitHub"]
   REPO[Repository: leticia-zg/patio-vision-api]
+  ACTIONS[GitHub Actions]
 end
 
 subgraph DevOps["Azure DevOps CI/CD"]
-  CI[CI - Maven Build + JUnit + Build Docker Image]
-  CD[CD - Release / Deploy Container]
-  
+  CI[1. CI - Build Maven + JUnit + Docker Image]
+  CD[2. CD - Release / Deploy Container]
 end
 
 subgraph Azure["Azure Cloud - rg-patiovision"]
   ACR[(ACR - acrrm558090)]
   ACI[(ACI - acirm558090)]
-  DB[(PostgreSQL Flexible Server<br/>futurestack)]
   WEBAPP[(Web App - acrwebapprm558090)]
+  PLAN[(App Service Plan - Linux F1)]
+  DB[(PostgreSQL Flexible Server - futurestack)]
+  AI[(Application Insights)]
 end
 
-DEV -->|Push código| REPO
-REPO --> CI
-CI -->|Push Docker Image| ACR
+%% --- FLUXO DEVOPS ---
+DEV -->|1. Push codigo| REPO
+REPO -->|2. Dispara workflow| ACTIONS
+ACTIONS -->|3. CI Build| CI
+CI -->|4. Push Docker Image| ACR
+CD -->|5. Deploy Container| ACI
+CD -->|6. Deploy Container| WEBAPP
 
-CD -->|Deploy Container| ACI
-CD -->|Deploy Container| WEBAPP
 ACR <--> ACI
 
+%% --- EXECUCAO USUARIO ---
 USER -->|HTTP/HTTPS| WEBAPP
+WEBAPP -->|JDBC SSL| DB
+WEBAPP -->|Logs/Metricas| AI
 
-
-WEBAPP -->|API JDBC + SSL| DB
+PLAN -. hospeda .- WEBAPP
 
 ```
 
