@@ -4,63 +4,76 @@
 
 ```mermaid
 flowchart LR
-    %% === PERSONAS ===
-    subgraph Personas
-        U[Usuário Final<br/>(Operador/Admin)]
-        D[Desenvolvedor]
+
+  %% ========= PERSONAS =========
+  USER((Usuário Final))
+  DEV((Desenvolvedor))
+
+  %% ========= GITHUB & DEVOPS =========
+  subgraph GitHub["GitHub"]
+    REPO[Repositório<br/>patio-vision-api]
+  end
+
+  subgraph DevOps["Azure DevOps (CI/CD)"]
+    CI[1) Pipeline CI<br/>Build & Push Docker]
+    CD[2) Pipeline CD<br/>Deploy ACI + Web App]
+  end
+
+  %% ========= AZURE CLOUD =========
+  subgraph Azure["Azure Cloud"]
+    
+    subgraph RG["Resource Group<br/>rg-patiovision"]
+      
+      ACR[(Azure Container Registry<br/>acr558090)]
+      ACI[(Azure Container Instances<br/>aci558090)]
+      
+      subgraph AS["App Service"]
+        PLAN["App Service Plan<br/>planACRWebApp (Linux F1)"]
+        APP["Web App<br/>acrwebapp558090"]
+      end
+
+      DB[(PostgreSQL Flexible Server<br/>patio_vision)]
+      OAUTH[(OAuth2 Providers<br/>Google/GitHub)]
     end
+  end
 
-    %% === DEVOPS PIPELINE ===
-    subgraph CI[1) CI - Integração Contínua]
-        A1[1. Commit no GitHub]
-        A2[2. Pipeline CI acionada]
-        A3[3. Build Docker<br/>(Gradle + Dockerfile)]
-        A4[4. Push para Azure Container Registry<br/>(ACR)]
-    end
+  %% ========= FRONTEND / BACKEND =========
+  subgraph APPSTACK["Aplicação Patio Vision"]
+    FE[Thymeleaf + TailwindCSS + DaisyUI]
+    BE[Spring Boot API<br/>Porta 8080]
+  end
 
-    subgraph CD[2) CD - Entrega Contínua]
-        B1[5. Pipeline CD acionada]
-        B2[6. Azure CLI autentica no Azure]
-        B3[7. Atualiza ACI<br/>(Container Instances)]
-        B4[8. Atualiza App Service<br/>(Web App)]
-    end
+  %% ========= FLUXOS =========
 
-    %% === CLOUD ARCHITECTURE ===
-    subgraph Cloud[Azure Cloud]
-        ACR[(Azure Container Registry)]
-        ACI[(Azure Container Instances)]
-        APP[(Azure App Service<br/>Web App)]
-        DB[(Azure PostgreSQL<br/>Flexible Server)]
-        OAUTH[(OAuth2<br/>GitHub / Google)]
-    end
+  %% -- Personas -> App
+  USER -->|HTTP/HTTPS| APP
 
-    %% === APPLICATION COMPONENTS ===
-    subgraph App[Aplicação Patio Vision]
-        FE[Frontend<br/>Thymeleaf + Tailwind + DaisyUI]
-        BE[Backend<br/>Spring Boot 3]
-    end
+  %% -- App decomposição
+  APP --> FE
+  APP --> BE
 
-    %% ======= RELAÇÕES PERSONAS -> SISTEMA =======
-    U -->|Acessa via browser| APP
-    APP --> FE
-    APP --> BE
+  %% -- Backend -> Banco
+  BE -->|JDBC + SSL| DB
 
-    U -->|Autenticação| OAUTH
-    BE --> DB
+  %% -- Login OAuth
+  APP -->|OAuth2 Login| OAUTH
 
-    %% ======= DEVOPS -> ACR =======
-    D -->|Push/Commit| A1
-    A1 --> A2 --> A3 --> A4 --> ACR
+  %% -- Dev workflow
+  DEV -->|Push código| REPO
+  REPO --> CI
 
-    %% ======= CD -> DEPLOY =======
-    ACR --> B1 --> B2 --> B3
-    ACR --> B4
+  %% -- CI -> ACR
+  CI -->|Build Docker<br/>Push image| ACR
 
-    %% ======= DEPLOY EXECUTION =======
-    B3 --> ACI
-    B4 --> APP
+  %% -- CD -> Infra
+  CD -->|Puxa imagem do ACR| ACI
+  CD -->|Atualiza container do<br/>Web App| APP
 
-    %% ======= APP RUNTIME =======
-    ACI -->|Exposição da API 8080| U
-    APP -->|Interface Web| U
+  %% -- APP Service Hosting
+  PLAN -. hospeda .- APP
+
+  %% -- ACI expõe a API
+  ACI -->|API 8080| USER
+
+
 ```
