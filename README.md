@@ -1,4 +1,4 @@
-### Atualização para teste da pipeline CI/CD
+## Atualização para teste da pipeline CI/CD
 
 # 🏍️ Patio Vision - Sistema de Gerenciamento de Pátios
 
