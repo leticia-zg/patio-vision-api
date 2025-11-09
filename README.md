@@ -1,3 +1,5 @@
+### Atualização para teste da pipeline CI/CD
+
 # 🏍️ Patio Vision - Sistema de Gerenciamento de Pátios
 
 Sistema web e mobile para gerenciamento inteligente de pátios de motos, permitindo controle de ocupação, entrada e saída de veículos através de dispositivos IoT.
