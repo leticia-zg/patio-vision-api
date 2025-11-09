@@ -5,64 +5,55 @@
 ```mermaid
 flowchart LR
 
-  USER((Usuario Final))
+  %% Usuários
+  USER((Usuário Final))
   DEV((Desenvolvedor))
 
-  %% GITHUB
+  %% GitHub
   subgraph GitHub["GitHub"]
-    REPO[Repositorio<br/>patio-vision-api]
+    REPO[Repositório: patio-vision-api]
   end
 
-  %% DEVOPS
+  %% DevOps
   subgraph DevOps["Azure DevOps (CI/CD)"]
-    CI[1) Pipeline CI<br/>Build & Push Docker]
-    CD[2) Pipeline CD<br/>Deploy ACI + Web App]
+    CI[1) Pipeline CI — Build e Push Docker]
+    CD[2) Pipeline CD — Deploy ACI + Web App]
   end
 
-  %% AZURE CLOUD
+  %% Azure Cloud
   subgraph Azure["Azure Cloud"]
-    subgraph RG["Resource Group<br/>rg-patiovision"]
+    subgraph RG["Resource Group: rg-patiovision"]
       
-      ACR[(Azure Container Registry<br/>acr558090)]
-      ACI[(Azure Container Instances<br/>aci558090)]
+      ACR[(Azure Container Registry — acr558090)]
+      ACI[(Azure Container Instances — aci558090)]
 
       subgraph AS["App Service"]
-        PLAN["App Service Plan<br/>planACRWebApp (Linux F1)"]
-        APP["Web App<br/>acrwebapp558090"]
+        PLAN["App Service Plan — planACRWebApp (Linux F1)"]
+        APP["Web App — acrwebapp558090"]
       end
 
-      DB[(PostgreSQL Flexible Server<br/>patio_vision)]
-      OAUTH[(OAuth2 Providers<br/>Google/GitHub)]
+      DB[(PostgreSQL Flexible Server — patio_vision)]
+      OAUTH[(OAuth2 Providers — Google / GitHub)]
 
     end
   end
 
-  %% APP STACK
-  subgraph APPSTACK["Aplicacao Patio Vision"]
-    FE[Thymeleaf + TailwindCSS + DaisyUI]
-    BE[Spring Boot API<br/>Porta 8080]
+  %% App Stack
+  subgraph APPSTACK["Aplicação Patio Vision"]
+    FE[Frontend — Thymeleaf + TailwindCSS + DaisyUI]
+    BE[Backend — Spring Boot API (porta 8080)]
   end
 
-  %% FLUXOS
+  %% Fluxos
   USER -->|HTTP/HTTPS| APPSTACK
-
   APPSTACK --> FE
   APPSTACK --> BE
-
   BE -->|JDBC + SSL| DB
-
   APPSTACK -->|OAuth2 Login| OAUTH
-
-  DEV -->|Push codigo| REPO
+  DEV -->|Push de código| REPO
   REPO --> CI
-
-  CI -->|Build Docker<br/>Push image| ACR
-
+  CI -->|Build Docker e Push da imagem| ACR
   CD -->|Puxa imagem do ACR| ACI
-  CD -->|Atualiza container do<br/>Web App| APP
-
+  CD -->|Atualiza container do Web App| APP
   PLAN -. hospeda .- APP
-
-  ACI -->|API 8080| USER
-
-```
+  ACI -->|API porta 8080| USER
