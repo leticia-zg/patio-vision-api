@@ -56,18 +56,19 @@ O **Patio Vision** é um sistema completo de gerenciamento de pátios de motos q
 - **Redução de perdas e retrabalhos** com dados padronizados e integrações IoT.
 - **Base para decisões** (indicadores e métricas) e **escalabilidade** na nuvem.
 
-## 🛠️ Tecnologias Utilizadas
+### 📌 Stack Utilizada
 
-- **Backend**: Spring Boot 3.5.4, Spring Security, Spring Data JPA
-- **Frontend**: Thymeleaf, TailwindCSS, DaisyUI
-- **Banco de Dados**: PostgreSQL com Flyway Migrations
-- **Autenticação**: OAuth2 (GitHub/Google) + Form-based
-- **Containerização**: Docker e Docker Compose
+- **Backend:** Spring Boot 3, Spring Security, Spring Data JPA  
+- **Frontend:** Thymeleaf, TailwindCSS, DaisyUI  
+- **Banco de Dados:** PostgreSQL + Flyway  
+- **Infraestrutura (Cloud):** Docker, Azure Container Registry, Azure Container Instances, Azure App Service  
+- **Autenticação:** OAuth2 (Google e GitHub)  
+- **DevOps:** GitHub + Azure DevOps (Pipelines CI/CD)
 
-## 🚀 Deploy
+## 🚀 Infra Azure
 
-- Passo a passo do deploy no Azure App Service:  
-  ➜ [DEPLOY.md](./DEPLOY.md)
+- Script para criação da infra:  
+  ➜ [Infra.md](./Infra.md)
 
 ## 🧪 Testes (scripts)
 
