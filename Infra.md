@@ -1,6 +1,4 @@
-# ============================================================
 # ✅ INFRA ACR — Criação do Azure Container Registry
-# ============================================================
 
 ###
 ### Variáveis
@@ -45,9 +43,8 @@ echo "🔐 Usuário ACR: $ACR_ADMIN_USER"
 echo "🔐 Senha ACR: $ACR_ADMIN_PASSWORD"
 
 
-# ============================================================
 # ✅ INFRA BANCO — PostgreSQL Flexible Server
-# ============================================================
+
 
 # Registrar provedores necessários
 az provider register --namespace Microsoft.DBforPostgreSQL
@@ -95,9 +92,7 @@ echo "USER      = $PGADMIN"
 echo "PASSWORD  = $PGADMINPWD"
 
 
-# ============================================================
 # ✅ INFRA ACI — Deploy do Container + Web App
-# ============================================================
 
 ###
 ### Variáveis
