@@ -156,6 +156,29 @@ docker-compose up postgres -d
 
 A aplicação estará disponível em: http://localhost:8080
 
+## 🚀 Executando em Produção (Azure)
+
+A aplicação também está configurada para rodar em ambiente cloud usando:
+
+- Azure Container Registry (ACR)
+- Azure Container Instances (ACI)
+- Azure App Service
+
+### 🔹 Deploy automático (CI/CD)
+O GitHub e o Azure DevOps realizam:
+
+1. **Build da imagem Docker**
+2. **Push para o ACR**
+3. **Deploy no ACI e App Service**
+
+### 🔹 Endpoints em produção
+- API (ACI): `http://acirm558090.eastus.azurecontainer.io:8080`
+- Web App (App Service): `https://acrwebapprm558090.azurewebsites.net`
+
+### 🔹 Scripts de infraestrutura
+Os scripts utilizados para criar ACR, banco PostgreSQL e ACI/App Service estão na pasta:
+  ➜ [Infra.md](./Infra.md)
+
 ## 📡 API Endpoints
 
 ### 🔐 Autenticação
