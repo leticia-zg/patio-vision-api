@@ -4,31 +4,39 @@
 
 ```mermaid
 flowchart LR
-  %% ===== GITHUB =====
-  subgraph GitHub
-    DEV[Developer]
-    REPO[Repository: leticia-zg/patio-vision-api]
-    GHA[GitHub Actions - Build & Deploy]
-    DEV -->|git push main| REPO
-    REPO --> GHA
-  end
 
-  %% ===== AZURE =====
-  subgraph Azure
-    subgraph RG["Resource Group: rg-patio-vision"]
-      PLAN["App Service Plan: plan-pg-rm556219 (Linux F1)"]
-      APP["Web App: app-pg-rm556219"]
-      AI["Application Insights: ai-pg-rm556219"]
-      DB["PostgreSQL Flexible Server: pg-rm1556219\nDatabase: patio_vision"]
-    end
-  end
+USER((Usuário Final))
+DEV((Desenvolvedor))
 
-  %% ===== FLUXOS =====
-  USER((Usuário)) -->|HTTP| APP
-  GHA -->|deploy JAR| APP
-  APP -->|JDBC SSL\nSPRING_DATASOURCE_*| DB
-  APP -->|Telemetry| AI
-  PLAN -. hospeda .- APP
+subgraph GitHub["GitHub"]
+  REPO[Repository: leticia-zg/patio-vision-api]
+end
+
+subgraph DevOps["Azure DevOps CI/CD"]
+  CI[CI - Maven Build + JUnit + Build Docker Image]
+  CD[CD - Release / Deploy Container]
+  
+end
+
+subgraph Azure["Azure Cloud - rg-patiovision"]
+  ACR[(ACR - acrrm558090)]
+  ACI[(ACI - acirm558090)]
+  DB[(PostgreSQL Flexible Server<br/>futurestack)]
+  WEBAPP[(Web App - acrwebapprm558090)]
+end
+
+DEV -->|Push código| REPO
+REPO --> CI
+CI -->|Push Docker Image| ACR
+
+CD -->|Deploy Container| ACI
+CD -->|Deploy Container| WEBAPP
+ACR <--> ACI
+
+USER -->|HTTP/HTTPS| WEBAPP
+
+
+WEBAPP -->|API JDBC + SSL| DB
 
 ```
 
