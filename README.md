@@ -77,6 +77,29 @@ O **Patio Vision** é um sistema completo de gerenciamento de pátios de motos q
 ## 🛠️ Arquitetura da solução
   
   ➜ [ARQUITETURA.md](./ARQUITETURA.md)
+  
+## 🔧 Detalhamento dos Componentes
+
+| **Nome do Componente** | **Tipo** | **Descrição Funcional** | **Tecnologia / Ferramenta** |
+|------------------------|----------|--------------------------|-----------------------------|
+| Repositório de Código | SCM (Source Code Management) | Armazena e versiona todo o código-fonte do projeto, incluindo backend, frontend, Dockerfile e documentação. | GitHub |
+| Pipeline de CI | Integração Contínua | Constrói a aplicação, gera a imagem Docker e envia ao Azure Container Registry (ACR). Executada automaticamente a cada push na branch `main`. | Azure DevOps Pipelines (YAML) |
+| Pipeline de CD | Entrega Contínua | Realiza o deploy da imagem no Azure Container Instances (ACI) e atualiza o Azure App Service com a nova build. | Azure DevOps Pipelines (YAML) |
+| Azure Container Registry (ACR) | Registry de Containers | Armazena todas as imagens Docker versionadas geradas pela pipeline de CI. | Azure ACR |
+| Azure Container Instances (ACI) | Execução de Containers | Roda a aplicação Spring Boot em ambiente serverless, permitindo deploy rápido. | Azure Container Instances |
+| Azure App Service (Web App) | Hospedagem Web | Hospeda a interface web e backend (container Docker) da aplicação. | Azure App Service (Linux Plan F1) |
+| App Service Plan | Camada de Computação | Fornece recursos (CPU, memória) para o Web App. | Azure App Service Plan |
+| Banco PostgreSQL | Banco de Dados (DBaaS) | Armazena pátios, setores, motos, usuários e histórico de movimentação. | Azure Database for PostgreSQL – Flexible Server |
+| Flyway | Versionamento de Banco | Gerencia migrations SQL executadas durante o bootstrap da aplicação. | Flyway |
+| Backend Spring Boot | API e Lógica de Negócio | Processa requisições, regras de negócio, acesso ao banco e autenticação. | Java 17 + Spring Boot 3.5.4 |
+| Frontend Web | Interface do Usuário | Interface responsiva baseada em servidor com Thymeleaf. | Thymeleaf + TailwindCSS + DaisyUI |
+| OAuth2 Login | Autenticação | Permite autenticação via Google e GitHub. | Spring Security OAuth2, Google OAuth, GitHub OAuth |
+| Dockerfile | Empacotamento | Define como o container da aplicação é construído via Gradle e JRE 17. | Docker |
+| Agente de Build | Executor do Pipeline | Ambiente onde CI/CD é executado (ubuntu-latest). | Azure DevOps Hosted Agent |
+| Azure CLI | Automação de Deploy | Utilizada pela pipeline CD para criar/atualizar ACI e App Service. | Azure CLI |
+| DNS Público do ACI | Endereço Público | URL pública exposta pelo container da API. Ex: `aci558090.eastus.azurecontainer.io:8080` | ACI DNS |
+| Usuário Final | Persona | Acessa a interface web/mobile para registrar motos e monitorar pátios. | — |
+| Desenvolvedor | Persona | Realiza commits, revisões e aciona pipelines de CI/CD. | — |
 
 ## 🚀 Como Executar o Projeto
 
