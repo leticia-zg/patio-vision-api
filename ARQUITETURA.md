@@ -43,5 +43,7 @@ WEBAPP -->|JDBC SSL| DB
 WEBAPP -->|Logs/Metricas| AI
 
 PLAN -. hospeda .- WEBAPP
+
+```
 - PostgreSQL Flexible Server: `pg-rm1556219` (DB `patio_vision`)
 - Application Insights: `ai-pg-rm556219`
